@@ -51,7 +51,7 @@ function Shell() {
             return (
               <Link
                 key={n.to}
-                to={n.to}
+                to={n.to as any}
                 className={`flex items-center gap-3 px-3 py-2 rounded-md text-sm transition ${
                   active ? "bg-primary/15 text-primary" : "text-white/70 hover:bg-white/5 hover:text-white"
                 }`}
