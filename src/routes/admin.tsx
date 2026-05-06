@@ -9,7 +9,7 @@ export const Route = createFileRoute("/admin")({
   component: AdminLayout,
 });
 
-const nav = [
+const nav: { to: string; label: string; icon: any; exact?: boolean }[] = [
   { to: "/admin", label: "Dashboard", icon: LayoutDashboard, exact: true },
   { to: "/admin/media", label: "Media", icon: Image },
   { to: "/admin/navigation", label: "Navigation", icon: MenuIcon },
