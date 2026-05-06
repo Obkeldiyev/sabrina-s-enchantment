@@ -20,7 +20,7 @@ const nav: { to: string; label: string; icon: any; exact?: boolean }[] = [
   { to: "/admin/settings", label: "Settings", icon: Settings },
   { to: "/admin/contacts", label: "Contacts", icon: Inbox },
   { to: "/admin/users", label: "Users", icon: Users },
-] as const;
+];
 
 function AdminLayout() {
   const path = useRouterState({ select: (s) => s.location.pathname });
