@@ -19,7 +19,7 @@ function NotFoundComponent() {
         <h1 className="text-7xl font-bold metallic-text font-brand">404</h1>
         <h2 className="mt-4 text-xl font-semibold">Page not found</h2>
         <p className="mt-2 text-sm text-muted-foreground">
-          This corner of the wind hasn't been mapped yet.
+          This page has not been created yet.
         </p>
         <div className="mt-6">
           <Link
@@ -39,21 +39,22 @@ export const Route = createRootRoute({
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "WindFlower Energy — Next-Generation Wind Energy" },
+      { title: "Sabrina's Enchantment - Smart WindFlower Energy" },
       {
         name: "description",
         content:
-          "Biomimicry-inspired wind energy systems for cities, homes and remote sites. Silent, beautiful, scalable.",
+          "Admin-managed WindFlower energy landing page for prototype updates, achievements, impact goals, and collaboration requests.",
       },
-      { property: "og:title", content: "WindFlower Energy" },
+      { property: "og:title", content: "Sabrina's Enchantment" },
       {
         property: "og:description",
-        content: "Redefining how the world captures wind.",
+        content: "Smart WindFlower energy storytelling powered by the backend.",
       },
       { property: "og:type", content: "website" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
+      { rel: "icon", href: "/windflower-logo.png" },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       {
         rel: "preconnect",

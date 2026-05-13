@@ -2,7 +2,7 @@ import { createFileRoute, Outlet, Link, useRouterState, useNavigate } from "@tan
 import { RequireAdmin, useAuth } from "@/lib/auth";
 import {
   LayoutDashboard, Image, Menu as MenuIcon, Layers, ListChecks,
-  Award, Share2, Settings, Inbox, Users, LogOut,
+  Award, Share2, Settings, Inbox, Users, LogOut, Home, FilePenLine,
 } from "lucide-react";
 
 export const Route = createFileRoute("/admin")({
@@ -11,10 +11,11 @@ export const Route = createFileRoute("/admin")({
 
 const nav: { to: string; label: string; icon: any; exact?: boolean }[] = [
   { to: "/admin", label: "Dashboard", icon: LayoutDashboard, exact: true },
+  { to: "/admin/landing", label: "Landing Editor", icon: FilePenLine },
   { to: "/admin/media", label: "Media", icon: Image },
   { to: "/admin/navigation", label: "Navigation", icon: MenuIcon },
-  { to: "/admin/sections", label: "Sections", icon: Layers },
-  { to: "/admin/items", label: "Items", icon: ListChecks },
+  { to: "/admin/sections", label: "Advanced Sections", icon: Layers },
+  { to: "/admin/items", label: "Advanced Items", icon: ListChecks },
   { to: "/admin/achievements", label: "Achievements", icon: Award },
   { to: "/admin/socials", label: "Socials", icon: Share2 },
   { to: "/admin/settings", label: "Settings", icon: Settings },
@@ -45,6 +46,13 @@ function Shell() {
           <div className="text-[10px] tracking-[0.3em] text-white/40">ADMIN</div>
         </div>
         <nav className="p-3 flex-1 space-y-1 overflow-y-auto">
+          <a
+            href="/"
+            className="mb-3 flex items-center gap-3 rounded-md border border-white/10 px-3 py-2 text-sm text-white/80 transition hover:bg-white/5 hover:text-white"
+          >
+            <Home className="w-4 h-4" />
+            Back to landing
+          </a>
           {nav.map((n) => {
             const active = n.exact ? path === n.to : path.startsWith(n.to);
             const Icon = n.icon;

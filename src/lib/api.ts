@@ -13,6 +13,7 @@ export const tokenStore = {
 export function assetUrl(url?: string | null): string | undefined {
   if (!url) return undefined;
   if (/^https?:\/\//i.test(url)) return url;
+  if (url.startsWith("/windflower-")) return url;
   return `${API_BASE}${url.startsWith("/") ? "" : "/"}${url}`;
 }
 
@@ -44,6 +45,12 @@ export async function api<T = any>(path: string, opts: Opts = {}): Promise<T> {
     headers,
     body: multipart ? body : body !== undefined ? JSON.stringify(body) : undefined,
   });
+  if (res.status === 401 && auth) {
+    tokenStore.clear();
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new Event("windflower:unauthorized"));
+    }
+  }
   if (!res.ok) {
     let msg = `${res.status} ${res.statusText}`;
     try {
@@ -53,5 +60,14 @@ export async function api<T = any>(path: string, opts: Opts = {}): Promise<T> {
     throw new Error(msg);
   }
   if (res.status === 204) return undefined as T;
-  return res.json();
+  const data = await res.json();
+  if (
+    data &&
+    typeof data === "object" &&
+    "data" in data &&
+    Object.keys(data).length === 1
+  ) {
+    return data.data as T;
+  }
+  return data;
 }

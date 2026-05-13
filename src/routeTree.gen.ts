@@ -19,6 +19,7 @@ import { Route as AdminSectionsRouteImport } from './routes/admin.sections'
 import { Route as AdminNavigationRouteImport } from './routes/admin.navigation'
 import { Route as AdminMediaRouteImport } from './routes/admin.media'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
+import { Route as AdminLandingRouteImport } from './routes/admin.landing'
 import { Route as AdminItemsRouteImport } from './routes/admin.items'
 import { Route as AdminContactsRouteImport } from './routes/admin.contacts'
 import { Route as AdminAchievementsRouteImport } from './routes/admin.achievements'
@@ -73,6 +74,11 @@ const AdminLoginRoute = AdminLoginRouteImport.update({
   path: '/login',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminLandingRoute = AdminLandingRouteImport.update({
+  id: '/landing',
+  path: '/landing',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminItemsRoute = AdminItemsRouteImport.update({
   id: '/items',
   path: '/items',
@@ -95,6 +101,7 @@ export interface FileRoutesByFullPath {
   '/admin/achievements': typeof AdminAchievementsRoute
   '/admin/contacts': typeof AdminContactsRoute
   '/admin/items': typeof AdminItemsRoute
+  '/admin/landing': typeof AdminLandingRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/media': typeof AdminMediaRoute
   '/admin/navigation': typeof AdminNavigationRoute
@@ -109,6 +116,7 @@ export interface FileRoutesByTo {
   '/admin/achievements': typeof AdminAchievementsRoute
   '/admin/contacts': typeof AdminContactsRoute
   '/admin/items': typeof AdminItemsRoute
+  '/admin/landing': typeof AdminLandingRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/media': typeof AdminMediaRoute
   '/admin/navigation': typeof AdminNavigationRoute
@@ -125,6 +133,7 @@ export interface FileRoutesById {
   '/admin/achievements': typeof AdminAchievementsRoute
   '/admin/contacts': typeof AdminContactsRoute
   '/admin/items': typeof AdminItemsRoute
+  '/admin/landing': typeof AdminLandingRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/media': typeof AdminMediaRoute
   '/admin/navigation': typeof AdminNavigationRoute
@@ -142,6 +151,7 @@ export interface FileRouteTypes {
     | '/admin/achievements'
     | '/admin/contacts'
     | '/admin/items'
+    | '/admin/landing'
     | '/admin/login'
     | '/admin/media'
     | '/admin/navigation'
@@ -156,6 +166,7 @@ export interface FileRouteTypes {
     | '/admin/achievements'
     | '/admin/contacts'
     | '/admin/items'
+    | '/admin/landing'
     | '/admin/login'
     | '/admin/media'
     | '/admin/navigation'
@@ -171,6 +182,7 @@ export interface FileRouteTypes {
     | '/admin/achievements'
     | '/admin/contacts'
     | '/admin/items'
+    | '/admin/landing'
     | '/admin/login'
     | '/admin/media'
     | '/admin/navigation'
@@ -258,6 +270,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminLoginRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/landing': {
+      id: '/admin/landing'
+      path: '/landing'
+      fullPath: '/admin/landing'
+      preLoaderRoute: typeof AdminLandingRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/items': {
       id: '/admin/items'
       path: '/items'
@@ -286,6 +305,7 @@ interface AdminRouteChildren {
   AdminAchievementsRoute: typeof AdminAchievementsRoute
   AdminContactsRoute: typeof AdminContactsRoute
   AdminItemsRoute: typeof AdminItemsRoute
+  AdminLandingRoute: typeof AdminLandingRoute
   AdminLoginRoute: typeof AdminLoginRoute
   AdminMediaRoute: typeof AdminMediaRoute
   AdminNavigationRoute: typeof AdminNavigationRoute
@@ -300,6 +320,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminAchievementsRoute: AdminAchievementsRoute,
   AdminContactsRoute: AdminContactsRoute,
   AdminItemsRoute: AdminItemsRoute,
+  AdminLandingRoute: AdminLandingRoute,
   AdminLoginRoute: AdminLoginRoute,
   AdminMediaRoute: AdminMediaRoute,
   AdminNavigationRoute: AdminNavigationRoute,
@@ -319,3 +340,12 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { createStart } from '@tanstack/react-start'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+  }
+}

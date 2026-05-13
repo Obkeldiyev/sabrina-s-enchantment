@@ -23,6 +23,7 @@ function useCount(resource: string) {
   const q = useQuery({
     queryKey: [resource],
     queryFn: () => api<any>(`/api/admin/${resource}`, { auth: true }),
+    retry: false,
   });
   const list = Array.isArray(q.data) ? q.data : q.data?.data || q.data?.[resource] || [];
   return list.length;
@@ -36,6 +37,7 @@ function Dashboard() {
   const contactsQ = useQuery({
     queryKey: ["contacts"],
     queryFn: () => api<any>("/api/admin/contacts", { auth: true }),
+    retry: false,
   });
   const recent = (Array.isArray(contactsQ.data) ? contactsQ.data : contactsQ.data?.data || []).slice(0, 5);
 

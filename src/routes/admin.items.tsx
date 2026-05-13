@@ -16,6 +16,7 @@ export const Route = createFileRoute("/admin/items")({
         { name: "unit", type: "text" },
         { name: "icon", type: "text", placeholder: "emoji or symbol" },
         { name: "href", type: "text" },
+        { name: "variant", type: "text", placeholder: "primary, secondary" },
         { name: "imageId", type: "number" },
         { name: "config", type: "json" },
         { name: "sortOrder", type: "number" },

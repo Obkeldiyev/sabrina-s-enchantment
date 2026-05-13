@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, useRouterState } from "@tanstack/react-router";
 import * as React from "react";
 import { useAuth } from "@/lib/auth";
 import { toast } from "sonner";
@@ -10,13 +10,14 @@ export const Route = createFileRoute("/admin/login")({
 function Login() {
   const { login, user } = useAuth();
   const navigate = useNavigate();
-  const [email, setEmail] = React.useState("admin@windflower.local");
-  const [password, setPassword] = React.useState("admin12345");
+  const path = useRouterState({ select: (s) => s.location.pathname });
+  const [email, setEmail] = React.useState("");
+  const [password, setPassword] = React.useState("");
   const [loading, setLoading] = React.useState(false);
 
   React.useEffect(() => {
-    if (user) navigate({ to: "/admin" });
-  }, [user, navigate]);
+    if (user && path === "/admin/login") navigate({ to: "/admin" });
+  }, [user, navigate, path]);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -59,9 +60,12 @@ function Login() {
         >
           {loading ? "SIGNING IN…" : "SIGN IN"}
         </button>
-        <p className="text-xs text-white/40 text-center">
-          Default: admin@windflower.local / admin12345
-        </p>
+        <a
+          href="/"
+          className="block text-center text-sm text-white/60 transition hover:text-white"
+        >
+          Back to landing
+        </a>
       </form>
     </div>
   );

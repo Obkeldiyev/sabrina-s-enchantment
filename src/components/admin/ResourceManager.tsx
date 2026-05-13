@@ -27,6 +27,7 @@ export default function ResourceManager({ title, resource, fields, multipart, im
   const { data, isLoading, error } = useQuery({
     queryKey: [resource],
     queryFn: () => api<any>(path, { auth: true }),
+    retry: false,
   });
   const list: any[] = Array.isArray(data) ? data : data?.data || data?.[resource] || data?.items || [];
 
@@ -38,6 +39,7 @@ export default function ResourceManager({ title, resource, fields, multipart, im
     onSuccess: () => {
       toast.success("Deleted");
       qc.invalidateQueries({ queryKey: [resource] });
+      qc.invalidateQueries({ queryKey: ["landing"] });
     },
     onError: (e: any) => toast.error(e.message),
   });
@@ -142,6 +144,7 @@ export default function ResourceManager({ title, resource, fields, multipart, im
               }
               toast.success(id ? "Updated" : "Created");
               qc.invalidateQueries({ queryKey: [resource] });
+              qc.invalidateQueries({ queryKey: ["landing"] });
               setEditing(null); setCreating(false);
             } catch (e: any) {
               toast.error(e.message);
@@ -166,7 +169,10 @@ function FormModal({
 }) {
   const [state, setState] = React.useState<any>(() => {
     const init: any = {};
-    fields.forEach((f) => { init[f.name] = initial[f.name] ?? (f.type === "switch" ? false : ""); });
+    fields.forEach((f) => {
+      init[f.name] =
+        initial[f.name] ?? (f.type === "switch" ? f.name === "isVisible" || f.name === "isActive" : "");
+    });
     return init;
   });
   const [file, setFile] = React.useState<File | null>(null);
@@ -185,14 +191,19 @@ function FormModal({
             e.preventDefault();
             setSubmitting(true);
             const payload: any = { ...state };
+            let valid = true;
             fields.forEach((f) => {
               if (f.type === "number") payload[f.name] = payload[f.name] === "" ? null : Number(payload[f.name]);
               if (f.type === "json" && typeof payload[f.name] === "string" && payload[f.name]) {
                 try { payload[f.name] = JSON.parse(payload[f.name]); }
-                catch { toast.error(`Invalid JSON in ${f.name}`); setSubmitting(false); return; }
+                catch { toast.error(`Invalid JSON in ${f.name}`); valid = false; }
               }
               if (f.type === "image") delete payload[f.name];
             });
+            if (!valid) {
+              setSubmitting(false);
+              return;
+            }
             await onSubmit(payload, file);
             setSubmitting(false);
           }}

@@ -17,15 +17,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = React.useState(true);
 
   React.useEffect(() => {
+    const unauthorized = () => setUser(null);
+    window.addEventListener("windflower:unauthorized", unauthorized);
+
     const t = tokenStore.get();
     if (!t) {
       setLoading(false);
-      return;
+      return () => window.removeEventListener("windflower:unauthorized", unauthorized);
     }
     api<{ user: User }>("/api/auth/me", { auth: true })
       .then((r) => setUser(r.user || (r as any)))
-      .catch(() => tokenStore.clear())
+      .catch(() => {
+        tokenStore.clear();
+        setUser(null);
+      })
       .finally(() => setLoading(false));
+
+    return () => window.removeEventListener("windflower:unauthorized", unauthorized);
   }, []);
 
   const login = async (email: string, password: string) => {

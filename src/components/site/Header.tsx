@@ -17,17 +17,14 @@ export default function Header() {
   const { data } = useQuery({
     queryKey: ["landing"],
     queryFn: () => api<any>("/api/landing"),
+    refetchOnMount: "always",
   });
   const navItems: Nav[] =
     (data?.navigation || data?.nav || []).filter((n: Nav) => n.isVisible !== false) || [];
-  const fallback = [
-    { label: "ABOUT", href: "#about" },
-    { label: "TECHNOLOGY", href: "#technology" },
-    { label: "APPLICATIONS", href: "#applications" },
-    { label: "ACHIEVEMENTS", href: "#achievements" },
-    { label: "CONTACT", href: "#contact" },
-  ];
-  const items = navItems.length ? navItems : fallback;
+  const items = navItems;
+  const brand = data?.settings?.brand || {};
+  const admin = data?.settings?.admin || {};
+  const logo = brand.logoUrl;
 
   return (
     <nav
@@ -37,8 +34,12 @@ export default function Header() {
     >
       <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
         <Link to="/" className="flex items-center gap-3">
-          <img src="/windflower-logo.png" alt="WindFlower" className="h-10 w-auto" />
-          <span className="font-brand text-lg metallic-text hidden sm:inline">WINDFLOWER</span>
+          {logo && <img src={logo} alt={brand.name || ""} className="h-10 w-auto" />}
+          {brand.name && (
+            <span className="font-brand text-lg metallic-text hidden sm:inline">
+              {brand.name}
+            </span>
+          )}
         </Link>
         <div className="hidden md:flex items-center gap-8 text-xs font-semibold tracking-[0.2em]">
           {items.map((it: any) => (
@@ -50,12 +51,14 @@ export default function Header() {
               {it.label}
             </a>
           ))}
-          <Link
-            to="/admin"
-            className="text-primary/90 hover:text-primary"
-          >
-            ADMIN
-          </Link>
+          {admin.showInHeader && admin.href && admin.label && (
+            <Link
+              to={admin.href}
+              className="text-primary/90 hover:text-primary"
+            >
+              {admin.label}
+            </Link>
+          )}
         </div>
         <button
           className="md:hidden text-white"
@@ -74,9 +77,11 @@ export default function Header() {
               {it.label}
             </a>
           ))}
-          <Link to="/admin" className="block text-sm tracking-widest text-primary">
-            ADMIN
-          </Link>
+          {admin.showInHeader && admin.href && admin.label && (
+            <Link to={admin.href} className="block text-sm tracking-widest text-primary">
+              {admin.label}
+            </Link>
+          )}
         </div>
       )}
     </nav>
