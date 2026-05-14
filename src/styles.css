@@ -132,22 +132,27 @@
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  animation: shimmer 6s linear infinite;
+  /* Reduce animation frequency and only animate on hover for better performance */
+}
+
+/* Only animate metallic text on hover to reduce CPU usage */
+.metallic-text:hover {
+  animation: shimmer 3s linear infinite;
 }
 
 .glow-text { text-shadow: 0 0 40px rgba(120, 180, 255, 0.35); }
 
 .glass {
   background: rgba(255, 255, 255, 0.04);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(8px); /* Reduced blur for better performance */
+  -webkit-backdrop-filter: blur(8px);
   border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .glass-strong {
   background: rgba(10, 12, 20, 0.6);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(12px); /* Reduced blur for better performance */
+  -webkit-backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
@@ -176,16 +181,16 @@
 .reveal {
   opacity: 0;
   transform: translateY(40px);
-  transition: opacity 0.9s cubic-bezier(.2,.7,.2,1), transform 0.9s cubic-bezier(.2,.7,.2,1);
-  will-change: opacity, transform;
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out; /* Simplified easing for better performance */
+  /* Removed will-change to reduce GPU memory usage */
 }
 .reveal.in { opacity: 1; transform: none; }
 
 .tilt-card {
   transform-style: preserve-3d;
-  transition: transform 0.25s ease, box-shadow 0.3s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease; /* Reduced transition time */
 }
-.tilt-card:hover { box-shadow: 0 30px 80px -20px rgba(80, 130, 255, 0.35); }
+.tilt-card:hover { box-shadow: 0 20px 60px -15px rgba(80, 130, 255, 0.25); } /* Reduced shadow intensity */
 
 .no-scrollbar::-webkit-scrollbar { display: none; }
 
@@ -197,7 +202,7 @@
   mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
 }
 
-/* magnetic cursor */
+/* magnetic cursor - optimized for performance */
 .wf-cursor {
   position: fixed;
   top: 0; left: 0;
@@ -206,9 +211,15 @@
   border: 1px solid rgba(160,200,255,0.6);
   pointer-events: none;
   z-index: 9999;
-  mix-blend-mode: difference;
-  transition: transform 0.15s ease, width 0.2s, height 0.2s, opacity 0.2s;
+  /* Removed mix-blend-mode to reduce GPU overhead */
+  transition: transform 0.1s ease, width 0.15s, height 0.15s, opacity 0.15s; /* Faster transitions */
   transform: translate(-50%, -50%);
+  /* Add GPU acceleration hint only when needed */
+  will-change: transform;
 }
-.wf-cursor.hover { width: 60px; height: 60px; background: rgba(255,255,255,0.06); }
-@media (max-width: 768px) { .wf-cursor { display: none; } }
+.wf-cursor.hover { 
+  width: 50px; height: 50px; /* Reduced size for better performance */
+  background: rgba(255,255,255,0.04); /* Reduced opacity */
+}
+/* Hide cursor on mobile and tablets */
+@media (max-width: 1024px) { .wf-cursor { display: none; } }

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Performance Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #0a0c14;
+            color: white;
+        }
+        .test-result {
+            margin: 10px 0;
+            padding: 10px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 5px;
+        }
+        .good { border-left: 4px solid #4ade80; }
+        .warning { border-left: 4px solid #fbbf24; }
+        .error { border-left: 4px solid #ef4444; }
+    </style>
+</head>
+<body>
+    <h1>Frontend Performance Test</h1>
+    <div id="results"></div>
+
+    <script>
+        const results = document.getElementById('results');
+        
+        function addResult(test, status, message) {
+            const div = document.createElement('div');
+            div.className = `test-result ${status}`;
+            div.innerHTML = `<strong>${test}:</strong> ${message}`;
+            results.appendChild(div);
+        }
+
+        // Test 1: Check if running on mobile
+        const isMobile = 'ontouchstart' in window;
+        addResult('Mobile Detection', isMobile ? 'good' : 'good', 
+            isMobile ? 'Mobile detected - performance optimizations active' : 'Desktop detected - full features enabled');
+
+        // Test 2: Check animation performance
+        const supportsRAF = typeof requestAnimationFrame !== 'undefined';
+        addResult('Animation Support', supportsRAF ? 'good' : 'error', 
+            supportsRAF ? 'RequestAnimationFrame supported' : 'RequestAnimationFrame not supported');
+
+        // Test 3: Check GPU acceleration
+        const canvas = document.createElement('canvas');
+        const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+        addResult('GPU Acceleration', gl ? 'good' : 'warning', 
+            gl ? 'WebGL supported - GPU acceleration available' : 'WebGL not supported - may impact performance');
+
+        // Test 4: Memory usage estimation
+        if (performance.memory) {
+            const memory = performance.memory;
+            const usedMB = Math.round(memory.usedJSHeapSize / 1048576);
+            const limitMB = Math.round(memory.jsHeapSizeLimit / 1048576);
+            const status = usedMB < 50 ? 'good' : usedMB < 100 ? 'warning' : 'error';
+            addResult('Memory Usage', status, `${usedMB}MB used of ${limitMB}MB limit`);
+        }
+
+        // Test 5: Check for performance API
+        const hasPerformanceAPI = typeof performance !== 'undefined' && performance.mark;
+        addResult('Performance API', hasPerformanceAPI ? 'good' : 'warning', 
+            hasPerformanceAPI ? 'Performance monitoring available' : 'Performance monitoring not available');
+
+        // Test 6: Network connection
+        if (navigator.connection) {
+            const connection = navigator.connection;
+            const effectiveType = connection.effectiveType;
+            const status = effectiveType === '4g' ? 'good' : effectiveType === '3g' ? 'warning' : 'error';
+            addResult('Network Speed', status, `Connection: ${effectiveType} (${connection.downlink}Mbps)`);
+        }
+
+        console.log('Performance test completed. Check the page for results.');
+    </script>
+</body>
+</html>

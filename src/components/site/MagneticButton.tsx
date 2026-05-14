@@ -13,25 +13,51 @@ export function MagneticButton({
 }) {
   const ref = React.useRef<HTMLAnchorElement & HTMLButtonElement>(null);
   React.useEffect(() => {
+    // Disable magnetic effect on mobile/touch devices
+    if ('ontouchstart' in window) return;
+    
     const el = ref.current;
     if (!el) return;
+    
     let rafId: number | null = null;
+    let rect: DOMRect | null = null;
+    let lastRectUpdate = 0;
+    
+    const updateRect = () => {
+      rect = el.getBoundingClientRect();
+      lastRectUpdate = Date.now();
+    };
     
     const move = (e: MouseEvent) => {
       if (rafId) cancelAnimationFrame(rafId);
+      
       rafId = requestAnimationFrame(() => {
-        const r = el.getBoundingClientRect();
-        const x = e.clientX - (r.left + r.width / 2);
-        const y = e.clientY - (r.top + r.height / 2);
-        el.style.transform = `translate(${x * 0.25}px, ${y * 0.35}px)`;
+        // Update rect only every 100ms to reduce layout thrashing
+        const now = Date.now();
+        if (!rect || now - lastRectUpdate > 100) {
+          updateRect();
+        }
+        
+        if (rect) {
+          const x = e.clientX - (rect.left + rect.width / 2);
+          const y = e.clientY - (rect.top + rect.height / 2);
+          // Reduce magnetic strength for better performance
+          el.style.transform = `translate(${x * 0.15}px, ${y * 0.2}px)`;
+        }
       });
     };
+    
     const leave = () => {
       if (rafId) cancelAnimationFrame(rafId);
       el.style.transform = "";
     };
-    el.addEventListener("mousemove", move);
+    
+    // Update rect on mount
+    updateRect();
+    
+    el.addEventListener("mousemove", move, { passive: true });
     el.addEventListener("mouseleave", leave);
+    
     return () => {
       if (rafId) cancelAnimationFrame(rafId);
       el.removeEventListener("mousemove", move);

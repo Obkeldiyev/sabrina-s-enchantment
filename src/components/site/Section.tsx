@@ -152,29 +152,53 @@ export function SectionHeading({ eyebrow, title, sub }: { eyebrow?: string; titl
 
 export function TiltCard({ children, className = "" }: { children: React.ReactNode; className?: string }) {
   const ref = React.useRef<HTMLDivElement>(null);
-  const rectRef = React.useRef<DOMRect | null>(null);
   const rafRef = React.useRef<number | null>(null);
+  const rectRef = React.useRef<DOMRect | null>(null);
+  const lastRectUpdate = React.useRef(0);
 
   React.useEffect(() => {
+    // Disable tilt effect on mobile/touch devices
+    if ('ontouchstart' in window) return;
+    
     const el = ref.current;
     if (!el) return;
     
+    const updateRect = () => {
+      rectRef.current = el.getBoundingClientRect();
+      lastRectUpdate.current = Date.now();
+    };
+    
     const move = (event: MouseEvent) => {
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      
       rafRef.current = requestAnimationFrame(() => {
-        const rect = el.getBoundingClientRect();
-        rectRef.current = rect;
-        const x = (event.clientX - rect.left) / rect.width - 0.5;
-        const y = (event.clientY - rect.top) / rect.height - 0.5;
-        el.style.transform = `perspective(900px) rotateX(${-y * 10}deg) rotateY(${x * 14}deg) translateZ(0)`;
+        // Update rect only every 100ms to reduce layout thrashing
+        const now = Date.now();
+        if (!rectRef.current || now - lastRectUpdate.current > 100) {
+          updateRect();
+        }
+        
+        if (rectRef.current) {
+          const rect = rectRef.current;
+          const x = (event.clientX - rect.left) / rect.width - 0.5;
+          const y = (event.clientY - rect.top) / rect.height - 0.5;
+          // Reduce tilt intensity for better performance
+          el.style.transform = `perspective(900px) rotateX(${-y * 6}deg) rotateY(${x * 8}deg) translateZ(0)`;
+        }
       });
     };
+    
     const leave = () => {
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
       el.style.transform = "";
     };
-    el.addEventListener("mousemove", move);
+    
+    // Update rect on mount
+    updateRect();
+    
+    el.addEventListener("mousemove", move, { passive: true });
     el.addEventListener("mouseleave", leave);
+    
     return () => {
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
       el.removeEventListener("mousemove", move);

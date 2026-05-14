@@ -7,7 +7,9 @@ export default function Footer() {
   const { data } = useQuery({
     queryKey: ["landing"],
     queryFn: () => api<any>("/api/landing"),
-    refetchOnMount: "always",
+    refetchOnMount: false, // Fixed: was "always", causing unnecessary refetches
+    refetchOnWindowFocus: false,
+    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
   });
 
   const socials: Social[] =

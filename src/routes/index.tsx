@@ -257,32 +257,50 @@ function Index() {
     if (pageTitle) document.title = pageTitle;
   }, [data?.settings?.brand?.pageTitle]);
 
+  // Fallback content when API is slow or fails
+  const fallbackContent = (
+    <div className="metallic-bg min-h-screen text-white">
+      <CustomCursor />
+      <Header />
+      
+      {/* Fallback Hero Section */}
+      <section className="relative min-h-screen overflow-hidden flex items-center justify-center" style={{ paddingTop: "6rem" }}>
+        <div className="absolute inset-0 grid-bg opacity-40" />
+        <div className="relative z-30 max-w-7xl mx-auto px-6 w-full text-center">
+          <div className="inline-block mb-6 px-4 py-1 rounded-full glass text-xs tracking-[0.4em] text-white/70">
+            WINDFLOWER
+          </div>
+          <h1 className="font-brand text-[clamp(3.6rem,5.2vw,6.4rem)] metallic-text glow-text leading-[0.95]">
+            Loading...
+          </h1>
+          <p className="mt-6 text-xl md:text-2xl text-white/80 font-light max-w-xl mx-auto">
+            {isError ? "Backend connection failed. Please check your API endpoint." : "Connecting to backend..."}
+          </p>
+        </div>
+      </section>
+      
+      <Footer />
+    </div>
+  );
+
+  // Show fallback immediately while loading or on error
+  if (isLoading || isError) {
+    return fallbackContent;
+  }
+
+  // Show full content when data is loaded
   return (
     <div className="metallic-bg min-h-screen text-white">
       <CustomCursor />
       <Header />
 
-      {isLoading && (
-        <div className="min-h-screen grid place-items-center text-white/50">Loading</div>
-      )}
+      {visibleSections.map((section) => (
+        <React.Fragment key={section.id}>
+          {renderSection(section, achievements)}
+        </React.Fragment>
+      ))}
 
-      {!isLoading && isError && (
-        <div className="min-h-screen grid place-items-center px-6 text-center text-amber-300">
-          Backend is offline. Start the backend on http://localhost:4000.
-        </div>
-      )}
-
-      {!isLoading && !isError && (
-        <>
-          {visibleSections.map((section) => (
-            <React.Fragment key={section.id}>
-              {renderSection(section, achievements)}
-            </React.Fragment>
-          ))}
-
-          <Footer />
-        </>
-      )}
+      <Footer />
     </div>
   );
 }
