@@ -34,25 +34,27 @@ function Login() {
   };
 
   return (
-    <div className="min-h-screen metallic-bg grid place-items-center px-6">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 grid place-items-center px-6">
       <form onSubmit={submit} className="glass-strong rounded-2xl p-8 w-full max-w-md space-y-5">
         <div>
-          <div className="font-brand text-3xl metallic-text">WINDFLOWER</div>
+          <div className="font-brand text-3xl text-white">WINDFLOWER</div>
           <div className="text-xs tracking-[0.3em] text-white/40">ADMIN LOGIN</div>
         </div>
         <input
           type="email"
-          className="w-full bg-white/5 border border-white/10 rounded-md px-4 py-3 outline-none focus:border-primary"
+          className="w-full bg-white/5 border border-white/10 rounded-md px-4 py-3 outline-none focus:border-primary transition-colors"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="Email"
+          autoComplete="email"
         />
         <input
           type="password"
-          className="w-full bg-white/5 border border-white/10 rounded-md px-4 py-3 outline-none focus:border-primary"
+          className="w-full bg-white/5 border border-white/10 rounded-md px-4 py-3 outline-none focus:border-primary transition-colors"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           placeholder="Password"
+          autoComplete="current-password"
         />
         <button
           disabled={loading}
