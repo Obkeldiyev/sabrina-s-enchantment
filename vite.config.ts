@@ -14,4 +14,12 @@ export default defineConfig({
     tailwindcss(),
     tsConfigPaths(),
   ],
+  server: {
+    port: 5447,
+    host: true, // Allow external connections
+  },
+  preview: {
+    port: 5447,
+    host: true,
+  },
 });
