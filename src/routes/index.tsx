@@ -240,23 +240,13 @@ function Index() {
     queryKey: ["landing"],
     queryFn: () => api<any>("/api/landing"),
     retry: 1,
-    refetchOnMount: "always",
-    refetchOnWindowFocus: true,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    staleTime: 5 * 60 * 1000,
   });
 
-  React.useEffect(() => {
-    let lenis: any;
-    (async () => {
-      const Lenis = (await import("lenis")).default;
-      lenis = new Lenis({ duration: 1.1, smoothWheel: true });
-      const raf = (time: number) => {
-        lenis.raf(time);
-        requestAnimationFrame(raf);
-      };
-      requestAnimationFrame(raf);
-    })();
-    return () => lenis?.destroy?.();
-  }, []);
+  // Disabled expensive Lenis smooth scrolling library for better performance
+  // Use native CSS smooth scroll behavior instead
 
   const sections: Section[] = data?.sections || [];
   const achievements: Achievement[] = data?.achievements || [];

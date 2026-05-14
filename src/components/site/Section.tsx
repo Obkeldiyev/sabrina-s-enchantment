@@ -31,9 +31,18 @@ export function Hero({
   const ref = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    let rafScheduled = false;
     const onScroll = () => {
-      const y = window.scrollY;
-      ref.current?.style.setProperty("--py", `${y * 0.3}px`);
+      if (!rafScheduled) {
+        rafScheduled = true;
+        requestAnimationFrame(() => {
+          const y = window.scrollY;
+          el.style.setProperty("--py", `${y * 0.3}px`);
+          rafScheduled = false;
+        });
+      }
     };
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
@@ -143,20 +152,31 @@ export function SectionHeading({ eyebrow, title, sub }: { eyebrow?: string; titl
 
 export function TiltCard({ children, className = "" }: { children: React.ReactNode; className?: string }) {
   const ref = React.useRef<HTMLDivElement>(null);
+  const rectRef = React.useRef<DOMRect | null>(null);
+  const rafRef = React.useRef<number | null>(null);
 
   React.useEffect(() => {
     const el = ref.current;
     if (!el) return;
+    
     const move = (event: MouseEvent) => {
-      const rect = el.getBoundingClientRect();
-      const x = (event.clientX - rect.left) / rect.width - 0.5;
-      const y = (event.clientY - rect.top) / rect.height - 0.5;
-      el.style.transform = `perspective(900px) rotateX(${-y * 10}deg) rotateY(${x * 14}deg) translateZ(0)`;
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      rafRef.current = requestAnimationFrame(() => {
+        const rect = el.getBoundingClientRect();
+        rectRef.current = rect;
+        const x = (event.clientX - rect.left) / rect.width - 0.5;
+        const y = (event.clientY - rect.top) / rect.height - 0.5;
+        el.style.transform = `perspective(900px) rotateX(${-y * 10}deg) rotateY(${x * 14}deg) translateZ(0)`;
+      });
     };
-    const leave = () => (el.style.transform = "");
+    const leave = () => {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      el.style.transform = "";
+    };
     el.addEventListener("mousemove", move);
     el.addEventListener("mouseleave", leave);
     return () => {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
       el.removeEventListener("mousemove", move);
       el.removeEventListener("mouseleave", leave);
     };

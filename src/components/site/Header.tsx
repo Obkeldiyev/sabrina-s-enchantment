@@ -8,16 +8,28 @@ type Nav = { id: number; label: string; href: string; isVisible: boolean; sortOr
 export default function Header() {
   const [scrolled, setScrolled] = React.useState(false);
   const [open, setOpen] = React.useState(false);
+  let scrollCheckScheduled = false;
+  
   React.useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 20);
+    const onScroll = () => {
+      if (!scrollCheckScheduled) {
+        scrollCheckScheduled = true;
+        requestAnimationFrame(() => {
+          setScrolled(window.scrollY > 20);
+          scrollCheckScheduled = false;
+        });
+      }
+    };
     onScroll();
-    window.addEventListener("scroll", onScroll);
+    window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
   const { data } = useQuery({
     queryKey: ["landing"],
     queryFn: () => api<any>("/api/landing"),
-    refetchOnMount: "always",
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    staleTime: 5 * 60 * 1000,
   });
   const navItems: Nav[] =
     (data?.navigation || data?.nav || []).filter((n: Nav) => n.isVisible !== false) || [];
